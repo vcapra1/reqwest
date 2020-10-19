@@ -1,5 +1,5 @@
 [package]
-name = "reqwest"
+name = "reqwest-vcapra1-add-cookies"
 version = "0.10.8" # remember to update html_root_url
 description = "higher level HTTP client library"
 keywords = ["http", "request", "client"]
