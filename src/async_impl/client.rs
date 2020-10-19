@@ -1111,6 +1111,19 @@ impl Client {
             }
         }
     }
+
+    /// If a persistent cookie store is enabled, adds a cookie to it.
+    /// Has no effect otherwise.
+    #[cfg(feature = "cookies")]
+    pub fn add_cookie(&mut self, name: &str, value: &str, domain: &str, path: &str, req_url: &Url) -> Result<(), cookie_store::CookieError> {
+        if let Some(store_wrapper) = self.client.cookie_store.as_ref() {
+            let mut cookie = Cookie::new(name, value);
+            cookie.set_domain(domain);
+            cookie.set_path(path);
+            let mut store = store_wrapper.write().unwrap();
+            store.0.insert(cookie, req_url)?;
+        }
+    }
 }
 
 impl fmt::Debug for Client {

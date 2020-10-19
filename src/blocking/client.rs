@@ -664,6 +664,13 @@ impl Client {
     pub fn execute(&self, request: Request) -> crate::Result<Response> {
         self.inner.execute_request(request)
     }
+
+    /// If a persistent cookie store is enabled, adds a cookie to it.
+    /// Has no effect otherwise.
+    #[cfg(feature = "cookies")]
+    pub fn add_cookie(&mut self, name: &str, value: &str, domain: &str, path: &str, req_url: &Url) -> Result<(), cookie_store::CookieError> {
+        self.inner.add_cookie(name, value, domain, path, req_url)
+    }
 }
 
 impl fmt::Debug for Client {
