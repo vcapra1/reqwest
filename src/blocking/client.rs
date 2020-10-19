@@ -18,7 +18,7 @@ use tokio::sync::{mpsc, oneshot};
 use super::request::{Request, RequestBuilder};
 use super::response::Response;
 use super::wait;
-use crate::{async_impl, header, IntoUrl, Method, Proxy, redirect};
+use crate::{async_impl, header, IntoUrl, Method, Proxy, redirect, Url};
 #[cfg(feature = "__tls")]
 use crate::{Certificate, Identity};
 
@@ -183,6 +183,13 @@ impl ClientBuilder {
     #[cfg(feature = "cookies")]
     pub fn cookie_store(self, enable: bool) -> ClientBuilder {
         self.with_inner(|inner| inner.cookie_store(enable))
+    }
+
+    /// If a persistent cookie store is enabled, adds a cookie to it.
+    /// Has no effect otherwise.
+    #[cfg(feature = "cookies")]
+    pub fn add_cookie(self, name: String, value: String, domain: String, path: String, req_url: &Url) -> ClientBuilder {
+        self.with_inner(|inner| inner.add_cookie(name, value, domain, path, req_url))
     }
 
     /// Enable auto gzip decompression by checking the `Content-Encoding` response header.
@@ -663,13 +670,6 @@ impl Client {
     /// or redirect limit was exhausted.
     pub fn execute(&self, request: Request) -> crate::Result<Response> {
         self.inner.execute_request(request)
-    }
-
-    /// If a persistent cookie store is enabled, adds a cookie to it.
-    /// Has no effect otherwise.
-    #[cfg(feature = "cookies")]
-    pub fn add_cookie(&mut self, name: &str, value: &str, domain: &str, path: &str, req_url: &Url) -> Result<(), cookie_store::CookieError> {
-        self.inner.add_cookie(name, value, domain, path, req_url)
     }
 }
 
